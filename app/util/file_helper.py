@@ -12,7 +12,7 @@ def save_json(filename, json_str):
 
 
 def zip_files(files, zip_name):
-    files = glob.glob('../../doc/Vectors/*')
+    files = glob.glob(files)
     f = zipfile.ZipFile(zip_name, 'w', zipfile.ZIP_DEFLATED)
 
     for file in files:
@@ -25,5 +25,5 @@ def zip_files(files, zip_name):
 
 
 if __name__ == "__main__":
-    files =['1.png.json','2.png.json']
+    files ="../../doc/Vectors/*"
     zip_files(files,'../../doc/Vectors/test.zip')

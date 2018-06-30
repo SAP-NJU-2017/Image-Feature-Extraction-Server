@@ -10,6 +10,7 @@ from PIL import Image
 import requests
 import json
 import os
+import shutil
 
 
 # @app.route('/', methods=['GET'])
@@ -81,15 +82,19 @@ def find_error_area():
         model_path = os.path.join(model_feature_dir_path, model_feature_list[i])
         feature_collection.append(model_path)
 
-    file_helper.zip_files(feature_collection, 'featureZip.zip')
+    if not os.path.exists("./doc/temp"):
+        os.mkdir("./doc/temp")
+    for file_path in feature_collection:
+        shutil.copyfile(file_path, "./doc/temp/"+file_path.split("/")[-1])
+    file_helper.zip_files("./doc/temp/*", 'featureZip.zip')
     feature_zip_file = open("featureZip.zip",'rb')
+    shutil.rmtree("./doc/temp")
     similarity_score = json.loads(sap_api.similarity_scoring(feature_zip_file))
-    print(similarity_score)
     result_model_name = ''
 
     for prediction in similarity_score['predictions']:
-        if prediction['id'] == filepath.split("/")[len(filepath.split("/"))-1]:
-            result_model_name = prediction['similarVectors'][0][id]
+        if prediction['id'] == filepath.split("/")[-1]+".json":
+            result_model_name = prediction['similarVectors'][0]['id']
 
 
     #利用滑动窗口，找出上传图片中与标准图片最相似的部分
@@ -97,23 +102,27 @@ def find_error_area():
     feature_collection.append("./doc/Vectors/"+result_model_name)
     image_model_path = "./doc/ImageModel/"+result_model_name.split(".json")[0]
     model = Image.open(image_model_path)
-    sliding_cut_list = sliding_window.slide(filepath, model.size[0], model.size[1], model.size[0] / 4,
-                                            model.size[1] / 4)
+    sliding_cut_list = sliding_window.slide(filepath, model.size[0], model.size[1], 1 / 4,
+                                            1 / 4)
     for cut_path in sliding_cut_list.keys():
         cut_feature_path = sap_api.image_feature_extraction_single(cut_path)
         feature_collection.append(cut_feature_path)
 
-    file_helper.zip_files(feature_collection, 'featureZip.zip')
-    feature_zip_file = open("featureZip.zip", 'rb')
+    if not os.path.exists("./doc/temp"):
+        os.mkdir("./doc/temp")
+    for file_path in feature_collection:
+        shutil.copyfile(file_path, "./doc/temp/"+file_path.split("/")[-1])
+    file_helper.zip_files("./doc/temp/*", 'featureZip.zip')
+    feature_zip_file = open("featureZip.zip",'rb')
+    shutil.rmtree("./doc/temp")
     similarity_score = json.loads(sap_api.similarity_scoring(feature_zip_file))
     result_cut_name = ''
 
     for prediction in similarity_score['predictions']:
         if prediction['id'] == result_model_name:
-            result_cut_name = prediction['similarVectors'][0][id]
+            result_cut_name = prediction['similarVectors'][0]['id']
 
     result_cut_path = "./doc/SlideWindowCuts/"+result_cut_name.split(".json")[0]
-    print(result_cut_path)
     result = {'startx': sliding_cut_list[result_cut_path]['startX'],
               'starty': sliding_cut_list[result_cut_path]['startY'],
               'endx': sliding_cut_list[result_cut_path]['endX'],
