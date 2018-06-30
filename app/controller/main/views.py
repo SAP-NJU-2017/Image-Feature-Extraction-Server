@@ -50,14 +50,20 @@ def try_similarity_scoring_api():
     filename = 'doc/Images/'
     filename = filename + request.args.get('name')  # ?key=value
     file = open(filename, 'rb')
-    result = sap_api.similarity_scoring(image=file, options={"numSimilarVectors":1})
+    result = sap_api.similarity_scoring(image=file, options={"numSimilarVectors": 1})
     return result
 
 
 # 前端调的方法
-@app.route('/find_error_area', methods=['GET'])
+@app.route('/api/upload', methods=['POST'])
+def upload():
+    return 'success'
+
+
+@app.route('/api/find_error_area', methods=['GET'])
 def find_error_area():
-    filepath = request.args.get('path')
+    filepath = "doc/Images/"+request.args.get('path')
+    print(filepath)
     # TODO 获得框的位置和大小
     # image_model_path = "./doc/ImageModel/"
     # model_list = os.listdir(image_model_path)
@@ -85,22 +91,21 @@ def find_error_area():
     if not os.path.exists("./doc/temp"):
         os.mkdir("./doc/temp")
     for file_path in feature_collection:
-        shutil.copyfile(file_path, "./doc/temp/"+file_path.split("/")[-1])
+        shutil.copyfile(file_path, "./doc/temp/" + file_path.split("/")[-1])
     file_helper.zip_files("./doc/temp/*", 'featureZip.zip')
-    feature_zip_file = open("featureZip.zip",'rb')
+    feature_zip_file = open("featureZip.zip", 'rb')
     shutil.rmtree("./doc/temp")
     similarity_score = json.loads(sap_api.similarity_scoring(feature_zip_file))
     result_model_name = ''
 
     for prediction in similarity_score['predictions']:
-        if prediction['id'] == filepath.split("/")[-1]+".json":
+        if prediction['id'] == filepath.split("/")[-1] + ".json":
             result_model_name = prediction['similarVectors'][0]['id']
 
-
-    #利用滑动窗口，找出上传图片中与标准图片最相似的部分
+    # 利用滑动窗口，找出上传图片中与标准图片最相似的部分
     feature_collection.clear()
-    feature_collection.append("./doc/Vectors/"+result_model_name)
-    image_model_path = "./doc/ImageModel/"+result_model_name.split(".json")[0]
+    feature_collection.append("./doc/Vectors/" + result_model_name)
+    image_model_path = "./doc/ImageModel/" + result_model_name.split(".json")[0]
     model = Image.open(image_model_path)
     sliding_cut_list = sliding_window.slide(filepath, model.size[0], model.size[1], 1 / 4,
                                             1 / 4)
@@ -111,9 +116,9 @@ def find_error_area():
     if not os.path.exists("./doc/temp"):
         os.mkdir("./doc/temp")
     for file_path in feature_collection:
-        shutil.copyfile(file_path, "./doc/temp/"+file_path.split("/")[-1])
+        shutil.copyfile(file_path, "./doc/temp/" + file_path.split("/")[-1])
     file_helper.zip_files("./doc/temp/*", 'featureZip.zip')
-    feature_zip_file = open("featureZip.zip",'rb')
+    feature_zip_file = open("featureZip.zip", 'rb')
     shutil.rmtree("./doc/temp")
     similarity_score = json.loads(sap_api.similarity_scoring(feature_zip_file))
     result_cut_name = ''
@@ -122,7 +127,7 @@ def find_error_area():
         if prediction['id'] == result_model_name:
             result_cut_name = prediction['similarVectors'][0]['id']
 
-    result_cut_path = "./doc/SlideWindowCuts/"+result_cut_name.split(".json")[0]
+    result_cut_path = "./doc/SlideWindowCuts/" + result_cut_name.split(".json")[0]
     result = {'startx': sliding_cut_list[result_cut_path]['startX'],
               'starty': sliding_cut_list[result_cut_path]['startY'],
               'endx': sliding_cut_list[result_cut_path]['endX'],
@@ -132,9 +137,9 @@ def find_error_area():
 
 
 # 获取错误信息
-@app.route('/get_error_text', methods=['GET'])
+@app.route('/api/get_error_text', methods=['GET'])
 def get_error_text():
-    filepath = 'doc/Images/'+request.args.get('path')
+    filepath = 'doc/Images/' + request.args.get('path')
     file = open(filepath, 'rb')
-    result=sap_api.image_text_recognition(image=file)
+    result = sap_api.image_text_recognition(image=file)
     return result
