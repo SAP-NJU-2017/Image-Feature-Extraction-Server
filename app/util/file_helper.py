@@ -23,5 +23,5 @@ def zip_files(files, zip_name):
 
 
 if __name__ == "__main__":
-    files =['test.json','test2.json']
+    files =['../../doc/Vectors/1.png.json','../../doc/Vectors/2.png.json']
     zip_files(files,'test.zip')
