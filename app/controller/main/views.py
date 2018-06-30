@@ -57,3 +57,12 @@ def find_error_area():
     result = {'startx': 0, 'starty': 0, 'endx': 0, 'endy': 0}
 
     return json.dumps(result)
+
+
+# 获取错误信息
+@app.route('/get_error_text', methods=['GET'])
+def get_error_text():
+    filepath = 'doc/Images/'+request.args.get('path')
+    file = open(filepath, 'rb')
+    result=sap_api.image_text_recognition(image=file)
+    return result
