@@ -29,6 +29,7 @@ def try_api():
     result = sap_api.image_feature_extraction(image=file)
     return result
 
+
 @app.route('/try_product_classification_api', methods=['GET'])
 def try_image_classification_api():
     filename = 'doc/Images/'
@@ -36,3 +37,15 @@ def try_image_classification_api():
     file = open(filename, 'rb')
     result = sap_api.image_classification(image=file)
     return result
+
+
+# 前端调的方法
+@app.route('/find_error_area', methods=['GET'])
+def find_error_area():
+    filepath = request.args.get('path')
+    # TODO 获得框的位置和大小
+    startx = 0
+    starty = 0
+    endx = 0
+    endy = 0
+    return startx, starty, endx, endy
