@@ -21,3 +21,13 @@ def image_classification(image):
     text = response.text
     print(text)
     return text
+
+def similarity_scoring(image):
+    url = 'https://sandbox.api.sap.com/ml/similarityscoring/inference_sync'
+    data = {'enctype': 'multipart/form-data'}
+    header = {'APIKey': '2YeLfvAoIz1wuxuSkwLBLxHkJFkhKq0j'}
+    files = {'files': image}
+    response = requests.post(url=url, headers=header, data=data, files=files,options={"numSimilarVectors":2})
+    text = response.text
+    print(text)
+    return text

@@ -39,6 +39,15 @@ def try_image_classification_api():
     return result
 
 
+@app.route('/try_similarity_scoring_api', methods=['GET'])
+def try_similarity_scoring_api():
+    filename = 'doc/Images/'
+    filename = filename + request.args.get('name')  # ?key=value
+    file = open(filename, 'rb')
+    result = sap_api.image_classification(image=file)
+    return result
+
+
 # 前端调的方法
 @app.route('/find_error_area', methods=['GET'])
 def find_error_area():
