@@ -49,7 +49,7 @@ def try_similarity_scoring_api():
     filename = 'doc/Images/'
     filename = filename + request.args.get('name')  # ?key=value
     file = open(filename, 'rb')
-    result = sap_api.image_classification(image=file, options={"numSimilarVectors":1})
+    result = sap_api.similarity_scoring(image=file, options={"numSimilarVectors":1})
     return result
 
 
@@ -72,8 +72,7 @@ def find_error_area():
     #     image_collection = ["./doc/Vectors/" + model_name[len(model_name) - 1] + ".json"]
 
     # 将上传的图片整张和标准图片做特征向量相似性比较，得出与其相似度最高的一张标准图片
-    target_image_file = open(filepath, 'rb')
-    target_feature_path = sap_api.image_feature_extraction(target_image_file)
+    target_feature_path = sap_api.image_feature_extraction_single(filepath)
     feature_collection = [target_feature_path]
     model_feature_dir_path = './doc/Vectors/'
     model_feature_list = os.listdir(model_feature_dir_path)
@@ -82,12 +81,14 @@ def find_error_area():
         model_path = os.path.join(model_feature_dir_path, model_feature_list[i])
         feature_collection.append(model_path)
 
-    feature_zip_file = file_helper.zip_files(feature_collection, 'featureZip')
+    file_helper.zip_files(feature_collection, 'featureZip.zip')
+    feature_zip_file = open("featureZip.zip",'rb')
     similarity_score = json.loads(sap_api.similarity_scoring(feature_zip_file))
+    print(similarity_score)
     result_model_name = ''
 
     for prediction in similarity_score['predictions']:
-        if prediction['id'] == target_image_file.name:
+        if prediction['id'] == filepath.split("/")[len(filepath.split("/"))-1]:
             result_model_name = prediction['similarVectors'][0][id]
 
 
@@ -99,11 +100,11 @@ def find_error_area():
     sliding_cut_list = sliding_window.slide(filepath, model.size[0], model.size[1], model.size[0] / 4,
                                             model.size[1] / 4)
     for cut_path in sliding_cut_list.keys():
-        cut_file = open(cut_path, 'rb')
-        cut_feature_path = sap_api.image_feature_extraction(cut_file)
+        cut_feature_path = sap_api.image_feature_extraction_single(cut_path)
         feature_collection.append(cut_feature_path)
 
-    feature_zip_file = file_helper.zip_files(feature_collection, 'featureZip')
+    file_helper.zip_files(feature_collection, 'featureZip.zip')
+    feature_zip_file = open("featureZip.zip", 'rb')
     similarity_score = json.loads(sap_api.similarity_scoring(feature_zip_file))
     result_cut_name = ''
 
