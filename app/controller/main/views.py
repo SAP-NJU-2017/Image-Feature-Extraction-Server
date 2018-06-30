@@ -63,7 +63,12 @@ def find_error_area():
         model_path = os.path.join(image_model_path, model_list[i])
         model = Image.open(model_path)
         sliding_cut_list = sliding_window.slide(filepath, model.size[0], model.size[1], model.size[0]/4, model.size[1]/4)
-        image_collection = []
+        for cut in sliding_cut_list:
+            cut_file = open(cut['startX'], 'rb')
+            cut_feature = sap_api.image_feature_extraction(cut_file)
+        model_name = model_path.split("/")
+        image_collection = ["./doc/Vectors/"+model_name[len(model_name)-1]+".json"]
+
 
 
     result = {'startx': 0, 'starty': 0, 'endx': 0, 'endy': 0}
