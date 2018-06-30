@@ -4,6 +4,7 @@ from app import db
 from app.models import User as user
 from app.util import sap_api
 from flask import request
+import requests
 import json
 
 
@@ -44,8 +45,6 @@ def try_image_classification_api():
 def find_error_area():
     filepath = request.args.get('path')
     # TODO 获得框的位置和大小
-    startx = 0
-    starty = 0
-    endx = 0
-    endy = 0
-    return startx, starty, endx, endy
+    result = {'startx': 0, 'starty': 0, 'endx': 0, 'endy': 0}
+
+    return json.dumps(result)
