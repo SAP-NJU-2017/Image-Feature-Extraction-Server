@@ -28,3 +28,11 @@ def try_api():
     file = open(filename, 'rb')
     result = sap_api.image_feature_extraction(image=file)
     return result
+
+@app.route('/try_product_classification_api', methods=['GET'])
+def try_image_classification_api():
+    filename = 'doc/Images/'
+    filename = filename + request.args.get('name')  # ?key=value
+    file = open(filename, 'rb')
+    result = sap_api.image_classification(image=file)
+    return result

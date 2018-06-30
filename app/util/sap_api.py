@@ -11,3 +11,13 @@ def image_feature_extraction(image):
     text = response.text
     print(text)
     return text
+
+def image_classification(image):
+    url = 'https://sandbox.api.sap.com/ml/imageclassifier/inference_sync'
+    data = {'enctype': 'multipart/form-data'}
+    header = {'APIKey': 'igGOBXHMjzg0JWXCAzaBdufp5YJyykHa'}
+    files = {'files': image}
+    response = requests.post(url=url, headers=header, data=data, files=files)
+    text = response.text
+    print(text)
+    return text
