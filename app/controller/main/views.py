@@ -7,18 +7,18 @@ from flask import request
 import json
 
 
-@app.route('/', methods=['GET'])
-def index():
-    temp = user.User.query.filter_by(username='test').first()
-    return json.dumps(temp, cls=user.UserEncode)
-
-
-@app.route('/add', methods=['GET'])
-def test():
-    new = user.User('test', 'this is a test case')
-    db.session.add(new)
-    db.session.commit()
-    return 'success'
+# @app.route('/', methods=['GET'])
+# def index():
+#     temp = user.User.query.filter_by(username='test').first()
+#     return json.dumps(temp, cls=user.UserEncode)
+#
+#
+# @app.route('/add', methods=['GET'])
+# def test():
+#     new = user.User('test', 'this is a test case')
+#     db.session.add(new)
+#     db.session.commit()
+#     return 'success'
 
 
 @app.route('/try_api', methods=['GET'])
