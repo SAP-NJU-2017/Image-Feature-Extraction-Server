@@ -1,5 +1,7 @@
 import zipfile
 import json
+import glob
+import os
 
 
 def save_json(filename, json_str):
@@ -10,12 +12,12 @@ def save_json(filename, json_str):
 
 
 def zip_files(files, zip_name):
-    zip = zipfile.ZipFile(zip_name, 'w', zipfile.ZIP_DEFLATED)
+    files = glob.glob('../../doc/Vectors/*')
+    f = zipfile.ZipFile(zip_name, 'w', zipfile.ZIP_DEFLATED)
+
     for file in files:
-        print('compressing', file)
-        zip.write(file)
-    zip.close()
-    print('compressing finished')
+        f.write(file, os.path.basename(file))
+    f.close()
 
     # files = ['.\\123.txt', '.\\3.txt']  # 文件的位置，多个文件用“，”隔开
     # zip_file = '.\\m66y.zip'  # 压缩包名字
@@ -23,5 +25,5 @@ def zip_files(files, zip_name):
 
 
 if __name__ == "__main__":
-    files =['../../doc/Vectors/1.png.json','../../doc/Vectors/2.png.json']
-    zip_files(files,'test.zip')
+    files =['1.png.json','2.png.json']
+    zip_files(files,'../../doc/Vectors/test.zip')

@@ -48,7 +48,7 @@ def try_similarity_scoring_api():
     filename = 'doc/Images/'
     filename = filename + request.args.get('name')  # ?key=value
     file = open(filename, 'rb')
-    result = sap_api.image_classification(image=file, options={"numSimilarVectors":1})
+    result = sap_api.similarity_scoring(image=file)
     return result
 
 
