@@ -57,6 +57,9 @@ def try_similarity_scoring_api():
 # 前端调的方法
 @app.route('/api/upload', methods=['POST'])
 def upload():
+    file = request.files['file']
+    if file:
+        file.save(os.path.join("./doc/Images", filename=file.filename))
     return 'success'
 
 
