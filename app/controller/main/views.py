@@ -127,6 +127,8 @@ def find_error_area():
         if prediction['id'] == result_model_name:
             result_cut_name = prediction['similarVectors'][0]['id']
 
+    sliding_window.clear_cut()
+
     result_cut_path = "./doc/SlideWindowCuts/" + result_cut_name.split(".json")[0]
     result = {'startx': sliding_cut_list[result_cut_path]['startX'],
               'starty': sliding_cut_list[result_cut_path]['startY'],
