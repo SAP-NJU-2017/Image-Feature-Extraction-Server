@@ -59,7 +59,7 @@ def try_similarity_scoring_api():
 def upload():
     file = request.files['file']
     if file:
-        file.save(os.path.join("./doc/Images", filename=file.filename))
+        file.save(os.path.join("./doc/Images", filename=file.filename)) 
     return 'success'
 
 
